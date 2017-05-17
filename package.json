@@ -1,0 +1,40 @@
+{
+  "name": "cytoscape-edge-editation",
+  "version": "0.0.0",
+  "description": "Allows to create multiple kinds of edges between nodes with seperate handles",
+  "main": "CytoscapeEdgeEditation.js",
+  "spm": {
+    "main": "cytoscape-edge-editation.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NotBrianZach/cytoscape-edge-editation.git"
+  },
+  "keywords": [
+    "cytoscape",
+    "cytoscape-extension"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/NotBrianZach/cytoscape-edge-editation/issues"
+  },
+  "homepage": "https://github.com/NotBrianZach/cytoscape-edge-editation",
+  "devDependencies": {
+    "gulp": "^3.8.8",
+    "gulp-jshint": "^1.8.5",
+    "gulp-prompt": "^0.1.1",
+    "gulp-replace": "^0.4.0",
+    "gulp-shell": "^0.2.9",
+    "jshint-stylish": "^1.0.0",
+    "run-sequence": "^1.0.0"
+  },
+  "peerDependencies": {
+    "cytoscape": "^3.0.0"
+  },
+  "dependencies": {
+    
+  }
+}

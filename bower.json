@@ -1,0 +1,24 @@
+{
+  "name": "cytoscape-edge-editation",
+  "description": "Allows to create multiple kinds of edges between nodes with seperate handles",
+  "main": "cytoscape-edge-editation.js",
+  "dependencies": {
+    "cytoscape": "^3.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NotBrianZach/cytoscape-edge-editation.git"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "keywords": [
+    "cytoscape",
+    "cyext"
+  ],
+  "license": "MIT"
+}

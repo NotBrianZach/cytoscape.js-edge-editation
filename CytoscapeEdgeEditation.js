@@ -347,6 +347,9 @@
                 }
             } else {
                 this._hover = e.cyTarget;
+                console.log('_mouseOver')
+                console.log(e)
+                console.log(this.hover)
                 this._showHandles(this._hover);
             }
         },

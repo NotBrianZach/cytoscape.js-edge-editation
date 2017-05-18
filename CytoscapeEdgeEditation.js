@@ -178,32 +178,45 @@
       this._cy.bind('zoom pan', this._redraw.bind(this));
 
 
-      this._canvas = '<canvas></canvas>';
-      // TODO change this to not use jquery
-      this._canvas.css("top", 0);
+      this._canvas = document.createElement('canvas') // '<canvas></canvas>';
 
-      this._canvas.addEventListener("mousedown", this._mouseDown.bind(this));
-      this._canvas.addEventListener("mousemove", this._mouseMove.bind(this));
+      // TODO change this to not use jquery
+      this._canvas.style.top = 0;
+
+      this._canvas.addEventListener('mousedown', this._mouseDown.bind(this));
+      this._canvas.addEventListener('mousemove', this._mouseMove.bind(this));
             // this._$canvas = $('<canvas></canvas>');
             // this._$canvas.css("top", 0);
             // this._$canvas.on("mousedown", this._mouseDown.bind(this));
             // this._$canvas.on("mousemove", this._mouseMove.bind(this));
 
-      this._ctx = this._$canvas[0].getContext('2d');
-      this._container.children.div.appendChild(this._canvas);
+      this._ctx = this._canvas.getContext('2d');
+      // console.log('this._container.children')
+      // console.log(this._container.children)
+      this._container.children[0].appendChild(this._canvas);
       // this._$container.children("div").append(this._$canvas);
 
-      document.elementById(window).bind('mouseup', this._mouseUp.bind(this));
+      console.log('document.getElementById(window)', window)
+      console.log(window)
+
+      // window.bind('mouseup', this._mouseUp.bind(this));
       // $(window).bind('mouseup', this._mouseUp.bind(this));
 
-            /* $(window).bind('resize', this._resizeCanvas.bind(this));
-            $(window).bind('resize', this._resizeCanvas.bind(this));*/
+            // $(window).bind('resize', this._resizeCanvas.bind(this));
 
-      this._cy.on("resize", this._resizeCanvas.bind(this));
+      // this._container.addEventListener('mouseover', function (e) {
+      //   if (this._hover) {
+      //     this._mouseOver({ cyTarget: this._hover });
+      //   }
+      // }.bind(this));
+      window.addEventListener('resize', this._resizeCanvas.bind(this));
 
-      this._container.bind('resize', function () {
-        this._resizeCanvas();
-      }.bind(this));
+      this._cy.on('resize', this._resizeCanvas.bind(this));
+
+      this._container.addEventListener('resize', this._resizeCanvas.bind(this));
+      // this._container.bind('resize', function () {
+      //   this._resizeCanvas();
+      // }.bind(this));
 
       this._resizeCanvas();
 
@@ -234,7 +247,7 @@
       }
     },
     _showHandles: function (target) {
-      var nodeTypeName = target.data().type;
+      var nodeTypeName = target._private.data.type;
       if (nodeTypeName) {
         var handles = this._handles[nodeTypeName] ? this._handles[nodeTypeName] : this._handles["*"];
 
@@ -295,13 +308,19 @@
       }
     },
     _resizeCanvas: function () {
-      this._canvas
-                .attr('height', this._container.height)
-                .attr('width', this._container.width)
-                .css({
-                  'position': 'absolute',
-                  'z-index': '999',
-                });
+
+      // this._canvas.style.top = 0;
+      this._canvas.style.height = this._container.height
+      this._canvas.style.width = this._container.width
+      this._canvas.style.position = 'absolute'
+      this._canvas.style['z-index'] = '999'
+      // this._canvas
+      //           .attr('height', this._container.height)
+      //           .attr('width', this._container.width)
+      //           .css({
+      //             'position': 'absolute',
+      //             'z-index': '999',
+      //           });
     },
     _mouseDown: function (e) {
       this._hit = this._hitTestHandles(e);
@@ -337,14 +356,14 @@
       if (this._hover) {
         var hit = this._hitTestHandles(e);
         if (hit) {
-          document.getElementBydId("body").style.cursor = 'pointer'
+          document.getElementsByTagName('body')[0].style.cursor = 'pointer'
                   // $("body").css("cursor", "pointer");
         } else {
-          document.getElementBydId("body").style.cursor = 'inherit'
+          document.getElementsByTagName('body')[0].style.cursor = 'pointer'
                   // $("body").css("cursor", "inherit");
         }
       } else {
-        document.getElementBydId("body").style.cursor = 'inherit'
+        document.getElementsByTagName('body')[0].style.cursor = 'pointer'
               // $("body").css("cursor", "inherit");
       }
 
@@ -358,14 +377,14 @@
     },
     _mouseOver: function (e) {
       if (this._dragging) {
-        if (e.cyTarget.id() != this._dragging.id() || this._hit.handle.allowLoop) {
-          this._hover = e.cyTarget;
+        if (e.target._private.data.id != this._dragging.id() || this._hit.handle.allowLoop) {
+          this._hover = e.target;
         }
       } else {
-        this._hover = e.cyTarget;
+        this._hover = e.target;
         console.log('_mouseOver')
         console.log(e)
-        console.log(this._hover.data)
+        // console.log(this._hover.data)
         this._showHandles(this._hover);
       }
     },

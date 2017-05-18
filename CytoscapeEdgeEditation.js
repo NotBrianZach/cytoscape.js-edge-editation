@@ -1,6 +1,6 @@
 (function (scope) {
-  var Class = function (param1, param2) {
-    var extend,
+  const Class = function (param1, param2) {
+    let extend,
       mixins,
       definition;
     if (param2) {     // two parameters passed, first is extends, second definition object
@@ -13,10 +13,10 @@
     }
 
 
-    var Definition = definition.hasOwnProperty("constructor") ? definition.constructor : function () {};
+    const Definition = definition.hasOwnProperty('constructor') ? definition.constructor : function () {};
 
     Definition.prototype = Object.create(extend ? extend.prototype : null);
-    var propertiesObject = definition.propertiesObject ? definition.propertiesObject : {};
+    const propertiesObject = definition.propertiesObject ? definition.propertiesObject : {};
     if (mixins) {
       var i,
         i2;
@@ -34,7 +34,7 @@
 
     Object.defineProperties(Definition.prototype, propertiesObject);
 
-    for (var key in definition) {
+    for (const key in definition) {
       if (definition.hasOwnProperty(key)) {
         Definition.prototype[key] = definition[key];
       }
@@ -46,28 +46,28 @@
   };
 
 
-  var Interface = function (properties) {
+  const Interface = function (properties) {
     this.properties = properties;
   };
 
-  var InterfaceException = function (message) {
-    this.name = "InterfaceException";
-    this.message = message || "";
+  const InterfaceException = function (message) {
+    this.name = 'InterfaceException';
+    this.message = message || '';
   };
 
   InterfaceException.prototype = new Error();
 
   Interface.prototype.implements = function (target) {
-    for (var i in this.properties) {
+    for (const i in this.properties) {
       if (target[this.properties[i]] == undefined) {
-        throw new InterfaceException("Missing property " + this.properties[i]);
+        throw new InterfaceException(`Missing property ${this.properties[i]}`);
       }
     }
     return true;
   };
 
   Interface.prototype.doesImplement = function (target) {
-    for (var i in this.properties) {
+    for (const i in this.properties) {
       if (target[this.properties[i]] === undefined) {
         return false;
       }
@@ -75,34 +75,34 @@
     return true;
   };
 
-  var VectorMath = {
-    distance: function (vector1, vector2) {
+  const VectorMath = {
+    distance(vector1, vector2) {
       return Math.sqrt(Math.pow(vector1.x - vector2.x, 2) + Math.pow(vector1.y - vector2.y, 2));
     },
   };
 
-  var EventDispatcher = Class({
-    constructor: function () {
+  const EventDispatcher = Class({
+    constructor() {
       this.events = {};
     },
-    on: function (name, listener, context) {
+    on(name, listener, context) {
       this.events[name] = this.events[name] ? this.events[name] : [];
       this.events[name].push({
-        listener: listener,
-        context: context,
+        listener,
+        context,
       })
     },
-    once: function (name, listener, context) {
+    once(name, listener, context) {
       this.off(name, listener, context);
       this.on(name, listener, context);
     },
-    off: function (name, listener, context) {
+    off(name, listener, context) {
             // no event with this name registered? => finish
       if (!this.events[name]) {
         return;
       }
       if (listener) {		// searching only for certains listeners
-        for (var i in this.events[name]) {
+        for (const i in this.events[name]) {
           if (this.events[name][i].listener === listener) {
             if (!context || this.events[name][i].context === context) {
               this.events[name].splice(i, 1);
@@ -113,10 +113,10 @@
         delete this.events[name];
       }
     },
-    trigger: function (name) {
-      var listeners = this.events[name];
+    trigger(name) {
+      const listeners = this.events[name];
 
-      for (var i in listeners) {
+      for (const i in listeners) {
         listeners[i].listener.apply(listeners[i].context, Array.prototype.slice.call(arguments, 1));
       }
     },
@@ -124,10 +124,10 @@
 
   scope.CytoscapeEdgeEditation = Class({
 
-    init: function (cy) {
+    init(cy) {
       this.DOUBLE_CLICK_INTERVAL = 300;
       this.HANDLE_SIZE = 5;
-      this.ARROW_END_ID = "ARROW_END_ID";
+      this.ARROW_END_ID = 'ARROW_END_ID';
 
       this._handles = {};
       this._dragging = false;
@@ -142,38 +142,38 @@
       this._cy.on('mouseout', 'node', this._mouseOut.bind(this));
 
 
-      this._container.addEventListener('mouseout', function (e) {
+      this._container.addEventListener('mouseout', (e) => {
         this._clear();
-      }.bind(this));
+      });
         // this._$container.addEventListener('mouseout', function(e){
         //   this._clear();
         // }.bind(this));
 
-      this._container.addEventListener('mouseover', function (e) {
+      this._container.addEventListener('mouseover', (e) => {
         if (this._hover) {
           this._mouseOver({ cyTarget: this._hover });
         }
-      }.bind(this));
+      });
       // this._$container.on('mouseover', function (e) {
       //   if (this._hover) {
       //     this._mouseOver({ cyTarget: this._hover });
       //   }
       // }.bind(this));
 
-      this._cy.on("select", "node", this._redraw.bind(this))
+      this._cy.on('select', 'node', this._redraw.bind(this))
 
-      this._cy.on("mousedown", "node", function () {
+      this._cy.on('mousedown', 'node', () => {
         this._nodeClicked = true;
-      }.bind(this));
+      });
 
-      this._cy.on("mouseup", "node", function () {
+      this._cy.on('mouseup', 'node', () => {
         this._nodeClicked = false;
-      }.bind(this));
+      });
 
-      this._cy.on("remove", "node", function () {
+      this._cy.on('remove', 'node', () => {
         this._hover = false;
         this._clear();
-      }.bind(this))
+      })
 
       this._cy.bind('zoom pan', this._redraw.bind(this));
 
@@ -221,61 +221,61 @@
       this._resizeCanvas();
 
       this._arrowEnd = this._cy.add({
-        group: "nodes",
+        group: 'nodes',
         data: {
-          "id": this.ARROW_END_ID,
-          "position": { x: 150, y: 150 },
+          id: this.ARROW_END_ID,
+          position: { x: 150, y: 150 },
         },
       });
 
       this._arrowEnd.css({
-        "opacity": 0,
-        'width': 0.0001,
-        'height': 0.0001,
+        opacity: 0,
+        width: 0.0001,
+        height: 0.0001,
       });
     },
-    registerHandle: function (handle) {
+    registerHandle(handle) {
       if (handle.nodeTypeNames) {
-        for (var i in handle.nodeTypeNames) {
-          var nodeTypeName = handle.nodeTypeNames[i];
+        for (const i in handle.nodeTypeNames) {
+          const nodeTypeName = handle.nodeTypeNames[i];
           this._handles[nodeTypeName] = this._handles[nodeTypeName] || [];
           this._handles[nodeTypeName].push(handle);
         }
       } else {
-        this._handles["*"] = this._handles["*"] || [];
-        this._handles["*"].push(handle);
+        this._handles['*'] = this._handles['*'] || [];
+        this._handles['*'].push(handle);
       }
     },
-    _showHandles: function (target) {
-      var nodeTypeName = target._private.data.type;
+    _showHandles(target) {
+      const nodeTypeName = target.data.type;
       if (nodeTypeName) {
-        var handles = this._handles[nodeTypeName] ? this._handles[nodeTypeName] : this._handles["*"];
+        const handles = this._handles[nodeTypeName] ? this._handles[nodeTypeName] : this._handles['*'];
 
-        for (var i in handles) {
+        for (const i in handles) {
           if (handles[i].type != null) {
             this._drawHandle(handles[i], target);
           }
         }
       }
     },
-    _clear: function () {
-      var w = this._container.width;
-      var h = this._container.height;
+    _clear() {
+      const w = this._container.width;
+      const h = this._container.height;
       this._ctx.clearRect(0, 0, w, h);
     },
-    _drawHandle: function (handle, target) {
-      var position = this._getHandlePosition(handle, target);
+    _drawHandle(handle, target) {
+      const position = this._getHandlePosition(handle, target);
 
       this._ctx.beginPath();
       this._ctx.arc(position.x, position.y, this.HANDLE_SIZE, 0, 2 * Math.PI, false);
       this._ctx.fillStyle = handle.color;
-      this._ctx.strokeStyle = "white";
+      this._ctx.strokeStyle = 'white';
       this._ctx.lineWidth = 2;
       this._ctx.fill();
       this._ctx.stroke();
     },
-    _drawArrow: function (fromNode, toPosition, handle) {
-      var toNode;
+    _drawArrow(fromNode, toPosition, handle) {
+      let toNode;
       if (this._hover) {
         toNode = this._hover;
       } else {
@@ -289,9 +289,9 @@
       }
 
       this._edge = this._cy.add({
-        group: "edges",
+        group: 'edges',
         data: {
-          id: "edge",
+          id: 'edge',
           source: fromNode.id(),
           target: toNode.id(),
         },
@@ -301,14 +301,13 @@
                 ),
       });
     },
-    _clearArrow: function () {
+    _clearArrow() {
       if (this._edge) {
         this._edge.remove();
         this._edge = null;
       }
     },
-    _resizeCanvas: function () {
-
+    _resizeCanvas() {
       // this._canvas.style.top = 0;
       this._canvas.style.height = this._container.height
       this._canvas.style.width = this._container.width
@@ -322,7 +321,7 @@
       //             'z-index': '999',
       //           });
     },
-    _mouseDown: function (e) {
+    _mouseDown(e) {
       this._hit = this._hitTestHandles(e);
 
       if (this._hit) {
@@ -332,14 +331,14 @@
         e.stopImmediatePropagation();
       }
     },
-    _mouseUp: function () {
+    _mouseUp() {
       if (this._hover) {
         if (this._hit) {
-          var edgeToRemove = this._checkSingleEdge(this._hit.handle, this._dragging);
+          const edgeToRemove = this._checkSingleEdge(this._hit.handle, this._dragging);
           if (edgeToRemove) {
-            this._cy.remove("#" + edgeToRemove.id());
+            this._cy.remove(`#${edgeToRemove.id()}`);
           }
-          var edge = this._cy.add({
+          const edge = this._cy.add({
             data: {
               source: this._dragging.id(),
               target: this._hover.id(),
@@ -352,9 +351,9 @@
       this._dragging = false;
       this._clearArrow();
     },
-    _mouseMove: function (e) {
+    _mouseMove(e) {
       if (this._hover) {
-        var hit = this._hitTestHandles(e);
+        const hit = this._hitTestHandles(e);
         if (hit) {
           document.getElementsByTagName('body')[0].style.cursor = 'pointer'
                   // $("body").css("cursor", "pointer");
@@ -375,114 +374,123 @@
         this._clear();
       }
     },
-    _mouseOver: function (e) {
+    _mouseOver(e) {
       if (this._dragging) {
-        if (e.target._private.data.id != this._dragging.id() || this._hit.handle.allowLoop) {
+        console.log('dragging in mouseover')
+        console.log(e)
+        if (e.target._private.data.id !== this._dragging.id() || this._hit.handle.allowLoop) {
           this._hover = e.target;
         }
       } else {
-        this._hover = e.target;
         console.log('_mouseOver')
         console.log(e)
         // console.log(this._hover.data)
-        this._showHandles(this._hover);
+        if (typeof e.cyTarget !== 'undefined') {
+          this._hover = e.cyTarget;
+          this._showHandles(this._hover);
+        } else {
+          this._hover = e.target._private;
+          this._showHandles(this._hover);
+        }
       }
     },
-    _mouseOut: function () {
+    _mouseOut() {
       this._clear();
       this._hover = null;
     },
-    _removeEdge: function (edge) {
-      edge.off("mousedown");
-      this._cy.remove("#" + edge.id());
+    _removeEdge(edge) {
+      edge.off('mousedown');
+      this._cy.remove(`#${edge.id()}`);
     },
-    _initEdgeEvents: function (edge) {
-      var self = this;
-      edge.on("mousedown", function () {
+    _initEdgeEvents(edge) {
+      const self = this;
+      edge.on('mousedown', function () {
         if (self.__lastClick && Date.now() - self.__lastClick < self.DOUBLE_CLICK_INTERVAL) {
           self._removeEdge(this);
         }
         self.__lastClick = Date.now();
       })
     },
-    _hitTestHandles: function (e) {
-      var mousePoisition = this._getRelativePosition(e);
+    _hitTestHandles(e) {
+      const mousePosition = this._getRelativePosition(e);
 
       if (this._hover) {
-        var nodeTypeName = this._hover.data().type;
+        const nodeTypeName = this._hover.data.type;
         if (nodeTypeName) {
-          var handles = this._handles[nodeTypeName] ? this._handles[nodeTypeName] : this._handles["*"];
+          const handles = this._handles[nodeTypeName] ? this._handles[nodeTypeName] : this._handles['*'];
 
-          for (var i in handles) {
-            var handle = handles[i];
+          for (const i in handles) {
+            const handle = handles[i];
 
-            var position = this._getHandlePosition(handle, this._hover);
-            if (VectorMath.distance(position, mousePoisition) < this.HANDLE_SIZE) {
+            const position = this._getHandlePosition(handle, this._hover);
+            if (VectorMath.distance(position, mousePosition) < this.HANDLE_SIZE) {
               return {
-                handle: handle,
-                position: position,
+                handle,
+                position
               };
             }
           }
         }
       }
     },
-    _getHandlePosition: function (handle, target) {
-      var position = target.renderedPosition();
-      var width = target.renderedOuterWidth();
-      var height = target.renderedOuterHeight();
-      var xpos = null;
-      var ypos = null;
+    _getHandlePosition(handle, target) {
+      const position = target.position;
+      const width = target.autoWidth;
+      const height = target.autoHeight;
+      let xpos = null;
+      let ypos = null;
 
       switch (handle.positionX) {
-        case "left":
+        case 'left':
           xpos = position.x - width / 2 + this.HANDLE_SIZE;
           break;
-        case "right":
+        case 'right':
           xpos = position.x + width / 2 - this.HANDLE_SIZE;
           break;
-        case "center":
+        case 'center':
           xpos = position.x;
           break;
+        default: break
       }
 
       switch (handle.positionY) {
-        case "top":
+        case 'top':
           ypos = position.y - height / 2 + this.HANDLE_SIZE;
           break;
-        case "center":
+        case 'center':
           ypos = position.y;
           break;
-        case "bottom":
+        case 'bottom':
           ypos = position.y + height / 2 - this.HANDLE_SIZE;
           break;
+        default: break
       }
 
       return { x: xpos, y: ypos };
     },
-    _getEdgeCSSByHandle: function (handle) {
-      var color = handle.lineColor ? handle.lineColor : handle.color;
+    _getEdgeCSSByHandle(handle) {
+      const color = handle.lineColor ? handle.lineColor : handle.color;
       return {
-        "line-color": color,
-        "target-arrow-color": color,
+        'line-color': color,
+        'target-arrow-color': color,
       };
     },
-    _getHandleByType: function (type) {
-      for (var i in this._handles) {
-        var byNodeType = this._handles[i];
-        for (var i2 in byNodeType) {
-          var handle = byNodeType[i2];
+    _getHandleByType(type) {
+      for (const i in this._handles) {
+        const byNodeType = this._handles[i];
+        for (const i2 in byNodeType) {
+          const handle = byNodeType[i2];
           if (handle.type == type) {
             return handle;
           }
         }
       }
     },
-    _getRelativePosition: function (e) {
-      var rect = this._container.getBoundingClientRect();
+    _getRelativePosition(e) {
+      const rect = this._container.getBoundingClientRect();
       return {
         x: e.pageX - (rect.left + document.body.scrollLeft),
-        y: e.pageY - (rect.top + document.body.scrollTop)
+        y: e.pageY - (rect.top + document.body.scrollTop),
       }
       // var containerPosition = this._$container.offset();
       // return {
@@ -490,9 +498,9 @@
       //   y: e.pageY - containerPosition.top,
       // }
     },
-    _checkSingleEdge: function (handle, node) {
+    _checkSingleEdge(handle, node) {
       if (handle.noMultigraph) {
-        var edges = this._cy.edges("[source='" + this._hover.id() + "'][target='" + node.id() + "'],[source='" + node.id() + "'][target='" + this._hover.id() + "']");
+        var edges = this._cy.edges(`[source='${this._hover.id()}'][target='${node.id()}'],[source='${node.id()}'][target='${this._hover.id()}']`);
 
         for (var i = 0; i < edges.length; i++) {
           return edges[i];
@@ -501,20 +509,20 @@
         if (handle.single == false) {
           return;
         }
-        var edges = this._cy.edges("[source='" + node.id() + "']");
+        var edges = this._cy.edges(`[source='${node.id()}']`);
 
         for (var i = 0; i < edges.length; i++) {
-          if (edges[i].data()["type"] == handle.type) {
+          if (edges[i].data().type == handle.type) {
             return edges[i];
           }
         }
       }
     },
-    _redraw: function () {
+    _redraw() {
       this._clear();
       if (this._hover) {
         this._showHandles(this._hover);
       }
     },
   });
-})(this);
+}(this));

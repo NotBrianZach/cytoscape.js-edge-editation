@@ -349,7 +349,7 @@
                 this._hover = e.cyTarget;
                 console.log('_mouseOver')
                 console.log(e)
-                console.log(this.hover)
+                console.log(this._hover.data)
                 this._showHandles(this._hover);
             }
         },

@@ -5,7 +5,7 @@
 
     if( !cytoscape ){ return; } // can't register if cytoscape unspecified
 
-    cytoscape( 'collections', 'edgeEditation', function(){
+    cytoscape( 'collection', 'edgeEditation', function(){
       var cy = this;
 
       // your extension impl...

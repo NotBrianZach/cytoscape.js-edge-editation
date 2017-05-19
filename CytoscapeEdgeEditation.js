@@ -136,20 +136,22 @@
 
       this._cy = cy;
       this._container = cy.container();
+      console.log('this._cy CytoscapeEdgeEditation');
+      console.log(this._cy);
             // this._$container = $(cy.container());
 
       this._cy.on('mouseover tap', 'node', this._mouseOver.bind(this));
       this._cy.on('mouseout', 'node', this._mouseOut.bind(this));
 
 
-      this._container.addEventListener('mouseout', (e) => {
+      this._container.addEventListener('mouseout', () => {
         this._clear();
       });
         // this._$container.addEventListener('mouseout', function(e){
         //   this._clear();
         // }.bind(this));
 
-      this._container.addEventListener('mouseover', (e) => {
+      this._container.addEventListener('mouseover', () => {
         if (this._hover) {
           this._mouseOver({ cyTarget: this._hover });
         }
@@ -160,12 +162,26 @@
       //   }
       // }.bind(this));
 
+      // this._cy.addEventListener('select', this._redraw.bind(this))
+      // this._cy.addEventListener('node', this._redraw.bind(this))
       this._cy.on('select', 'node', this._redraw.bind(this))
 
+      // this._cy.addEventListener('node', () => {
+      //   this._nodeClicked = true;
+      // })
+      // this._cy.addEventListener('mousedown', () => {
+      //   this._nodeClicked = true;
+      // })
       this._cy.on('mousedown', 'node', () => {
         this._nodeClicked = true;
       });
 
+      // this._cy.addEventListener('node', () => {
+      //   this._nodeClicked = true;
+      // })
+      // this._cy.addEventListener('mouseup', () => {
+      //   this._nodeClicked = true;
+      // })
       this._cy.on('mouseup', 'node', () => {
         this._nodeClicked = false;
       });
@@ -180,7 +196,6 @@
 
       this._canvas = document.createElement('canvas') // '<canvas></canvas>';
 
-      // TODO change this to not use jquery
       this._canvas.style.top = 0;
 
       this._canvas.addEventListener('mousedown', this._mouseDown.bind(this));
@@ -191,6 +206,8 @@
             // this._$canvas.on("mousemove", this._mouseMove.bind(this));
 
       this._ctx = this._canvas.getContext('2d');
+      console.log('this._ctx')
+      console.log(this._ctx)
       // console.log('this._container.children')
       // console.log(this._container.children)
       this._container.children[0].appendChild(this._canvas);
@@ -211,6 +228,8 @@
       // }.bind(this));
       window.addEventListener('resize', this._resizeCanvas.bind(this));
 
+      console.log('this._cy in init')
+      console.log(this._cy)
       this._cy.on('resize', this._resizeCanvas.bind(this));
 
       this._container.addEventListener('resize', this._resizeCanvas.bind(this));
@@ -228,19 +247,23 @@
         },
       });
 
-      this._arrowEnd.css({
-        opacity: 0,
-        width: 0.0001,
-        height: 0.0001,
-      });
+      this._arrowEnd.style.opacity = '0'
+      this._arrowEnd.style.width = '0.0001'
+      this._arrowEnd.style.height = '0.0001'
+      // this._arrowEnd.css({
+      //   opacity: 0,
+      //   width: 0.0001,
+      //   height: 0.0001,
+      // });
     },
     registerHandle(handle) {
       if (handle.nodeTypeNames) {
-        for (const i in handle.nodeTypeNames) {
+        handle.nodeTypeNames.map((i) => {
           const nodeTypeName = handle.nodeTypeNames[i];
           this._handles[nodeTypeName] = this._handles[nodeTypeName] || [];
           this._handles[nodeTypeName].push(handle);
-        }
+          return undefined
+        })
       } else {
         this._handles['*'] = this._handles['*'] || [];
         this._handles['*'].push(handle);
@@ -248,14 +271,16 @@
     },
     _showHandles(target) {
       const nodeTypeName = target.data.type;
+      console.log('_showHandles, target')
+      console.log(target)
       if (nodeTypeName) {
         const handles = this._handles[nodeTypeName] ? this._handles[nodeTypeName] : this._handles['*'];
-
-        for (const i in handles) {
+        handles.map((i) => {
           if (handles[i].type != null) {
             this._drawHandle(handles[i], target);
           }
-        }
+          return undefined
+        })
       }
     },
     _clear() {
@@ -264,6 +289,7 @@
       this._ctx.clearRect(0, 0, w, h);
     },
     _drawHandle(handle, target) {
+      console.log('drawHandle')
       const position = this._getHandlePosition(handle, target);
 
       this._ctx.beginPath();
@@ -295,10 +321,7 @@
           source: fromNode.id(),
           target: toNode.id(),
         },
-        css: $.extend(
-                    this._getEdgeCSSByHandle(handle),
-                    { opacity: 0.5 }
-                ),
+        css: Object.assign(this._getEdgeCSSByHandle(handle), { opacity: 0.5 }),
       });
     },
     _clearArrow() {
@@ -378,20 +401,24 @@
       if (this._dragging) {
         console.log('dragging in mouseover')
         console.log(e)
-        if (e.target._private.data.id !== this._dragging.id() || this._hit.handle.allowLoop) {
+        if (typeof e.cyTarget !== 'undefined' && (e.cyTarget._private.data.id !== this._dragging.id() || this._hit.handle.allowLoop)) {
           this._hover = e.target;
         }
       } else {
+        // console.log(this._hover.data)
         console.log('_mouseOver')
         console.log(e)
-        // console.log(this._hover.data)
         if (typeof e.cyTarget !== 'undefined') {
+          console.log('_mouseOver')
+          console.log(e)
           this._hover = e.cyTarget;
           this._showHandles(this._hover);
-        } else {
-          this._hover = e.target._private;
-          this._showHandles(this._hover);
         }
+        // if it's not a cyTarget, might not make sense
+        // else {
+        //   this._hover = e.target._private;
+        //   this._showHandles(this._hover);
+        // }
       }
     },
     _mouseOut() {
@@ -426,7 +453,7 @@
             if (VectorMath.distance(position, mousePosition) < this.HANDLE_SIZE) {
               return {
                 handle,
-                position
+                position,
               };
             }
           }
@@ -480,7 +507,7 @@
         const byNodeType = this._handles[i];
         for (const i2 in byNodeType) {
           const handle = byNodeType[i2];
-          if (handle.type == type) {
+          if (handle.type === type) {
             return handle;
           }
         }
@@ -500,19 +527,20 @@
     },
     _checkSingleEdge(handle, node) {
       if (handle.noMultigraph) {
-        var edges = this._cy.edges(`[source='${this._hover.id()}'][target='${node.id()}'],[source='${node.id()}'][target='${this._hover.id()}']`);
+        const edges = this._cy.edges(`[source='${this._hover.id()}'][target='${node.id()}'],
+           [source='${node.id()}'][target='${this._hover.id()}']`);
 
-        for (var i = 0; i < edges.length; i++) {
+        for (let i = 0; i < edges.length; i += 1) {
           return edges[i];
         }
       } else {
-        if (handle.single == false) {
+        if (handle.single === false) {
           return;
         }
-        var edges = this._cy.edges(`[source='${node.id()}']`);
+        const edges = this._cy.edges(`[source='${node.id()}']`);
 
-        for (var i = 0; i < edges.length; i++) {
-          if (edges[i].data().type == handle.type) {
+        for (let i = 0; i < edges.length; i++) {
+          if (edges[i].data().type === handle.type) {
             return edges[i];
           }
         }
